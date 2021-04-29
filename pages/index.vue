@@ -1,63 +1,140 @@
 <template>
   <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">nuxtchart</h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+    <bar-chart
+      v-if="condition"
+      :data="barChartData"
+      :options="barChartOptions"
+      :height="200"
+    />
+    <div
+      v-else
+      style="
+         {
+          position: relative;
+          text-align: center;
+          justify-self: center;
+          align-self: center;
+        }
+      "
+    >
+      <h1>Load....</h1>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+import axios from 'axios'
+import BarChart from '~/components/barChart'
+
+const chartColors = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)',
+}
+
+const payload = []
+
+export default {
+  components: {
+    BarChart,
+  },
+  data() {
+    return {
+      barChartData: {
+        labels: [
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7',
+          '8',
+          '9',
+          '10',
+          '11',
+          '12',
+          '13',
+          '14',
+          '15',
+          '16',
+          '17',
+          '18',
+          '19',
+          '20',
+        ],
+        datasets: [
+          {
+            label: 'Market_Cap_Usd',
+            backgroundColor: [
+              chartColors.red,
+              chartColors.orange,
+              chartColors.yellow,
+              chartColors.green,
+              chartColors.blue,
+              chartColors.purple,
+              chartColors.gray,
+              chartColors.red,
+              chartColors.green,
+              chartColors.purple,
+              chartColors.blue,
+              chartColors.purple,
+              chartColors.red,
+              chartColors.gray,
+              chartColors.purple,
+              chartColors.yellow,
+              chartColors.green,
+              chartColors.blue,
+              chartColors.red,
+              chartColors.yellow,
+            ],
+            data: payload,
+          },
+        ],
+      },
+      barChartOptions: {
+        responsive: true,
+        legend: {
+          display: false,
+        },
+        title: {
+          display: true,
+          text: 'Market Cap Usd',
+        },
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+            },
+          ],
+        },
+      },
+      condition: false,
+    }
+  },
+
+  // makes ajax call to get the data
+  async fetch() {
+    await axios
+      .get('https://api.coinlore.net/api/tickers/')
+      .then((res) => {
+        const doc = res.data.data
+        const temp = doc.sort((a, b) => a.rank - b.rank)
+        temp.forEach((element) => {
+          payload.push(Number(element.market_cap_usd))
+        })
+
+        this.condition = true
+      })
+      .catch((err) => {
+        throw err
+      })
+  },
+}
 </script>
-
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
-</style>
