@@ -15,4 +15,7 @@ $ yarn start
 
 # generate static project
 $ yarn generate
+
+#challenge
+Using **fetch** to make ajax request was not returning the data, so I had to install axios and it did the work
 ```

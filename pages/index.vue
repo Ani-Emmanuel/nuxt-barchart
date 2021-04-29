@@ -4,7 +4,7 @@
       v-if="condition"
       :data="barChartData"
       :options="barChartOptions"
-      :height="200"
+      :height="170"
     />
     <div
       v-else
